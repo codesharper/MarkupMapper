@@ -14,15 +14,17 @@ namespace MarkupMapper.Xml
         {
             var mapObj = Map(xElementToMapFrom, typeof(T1));
             if (mapObj == null) return default(T1);
-            return (T1)mapObj;            
+            return (T1)mapObj;
         }
 
         public static object Map(System.Xml.Linq.XElement xSource, Type sourceType)
         {
             if (xSource == null) throw new ArgumentNullException("xSource");
 
+            ValidateSourceTypeHasParameterlessConstructor(sourceType);
+
             var xmlRootName = xSource.Name.LocalName;
-            
+
             if (!sourceType.IsGenericType)
             {
                 string typeName = sourceType.Name;
@@ -47,9 +49,17 @@ namespace MarkupMapper.Xml
                 }
 
                 return instance;
-                
+
             }
             return null;
+        }
+
+        private static void ValidateSourceTypeHasParameterlessConstructor(Type sourceType)
+        {
+            if (sourceType.GetConstructor(Type.EmptyTypes) == null)
+            {
+                throw new InvalidOperationException("sourceType must have parameterless constructor");
+            }
         }
     }
 }
