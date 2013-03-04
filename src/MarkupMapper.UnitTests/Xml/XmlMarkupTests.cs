@@ -13,19 +13,30 @@ namespace MarkupMapper.UnitTests.Xml
     [TestClass]
     public class XmlMarkupTests
     {
-        const string Model1Xml = "<Model1 />";        
+        #region Xml
+        const string Model1Xml = "<Model1 />";
         readonly XElement xModel1 = XElement.Parse(Model1Xml);
         readonly XElement xModel2 = new XElement("Model2", new XAttribute("Id", 1));
+        #endregion
 
+        #region Classes
         class Model1
         {
-            
+
         }
 
         class Model2
         {
             public int Id { get; set; }
         }
+
+        class ModelWithoutParameterlessConstuctor
+        {
+            public ModelWithoutParameterlessConstuctor(int i)
+            {
+            }
+        }
+        #endregion
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -40,7 +51,7 @@ namespace MarkupMapper.UnitTests.Xml
         {
             MarkupMapper.Xml.XmlMapper.Map<Model1>(new XElement("x"));
         }
-        
+
         [TestMethod]
         public void Map_Model1FromModel1Xml_GetsCreated()
         {
@@ -58,11 +69,11 @@ namespace MarkupMapper.UnitTests.Xml
 
         }
 
-        [TestMethod]        
+        [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Map_ClassWithoutParameterlessConstructor_ThrowsInvalidOperationException()
         {
-            Assert.Fail("Fail");
+            XmlMapper.Map<ModelWithoutParameterlessConstuctor>(xModel1);
         }
     }
 }
